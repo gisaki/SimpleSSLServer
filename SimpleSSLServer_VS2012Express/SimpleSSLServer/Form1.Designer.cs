@@ -35,9 +35,9 @@
             // 
             // button_Listen
             // 
-            this.button_Listen.Location = new System.Drawing.Point(39, 39);
+            this.button_Listen.Location = new System.Drawing.Point(14, 39);
             this.button_Listen.Name = "button_Listen";
-            this.button_Listen.Size = new System.Drawing.Size(75, 23);
+            this.button_Listen.Size = new System.Drawing.Size(100, 23);
             this.button_Listen.TabIndex = 0;
             this.button_Listen.Text = "Listen";
             this.button_Listen.UseVisualStyleBackColor = true;

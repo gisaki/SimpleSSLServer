@@ -21,11 +21,24 @@ namespace SimpleSSLServer
             InitializeComponent();
         }
 
+        private TcpServer server_ = null;
         private void button_Listen_Click(object sender, EventArgs e)
         {
-            int portno = Int32.Parse(textBoxPort.Text);
-            TcpServer server = new TcpServer(portno);
-            server.proc_ssl_server();
+            if (this.server_ == null)
+            {
+                button_Listen.Text = "Listening ...";
+
+                int portno = Int32.Parse(textBoxPort.Text);
+                this.server_ = new TcpServer(portno);
+                this.server_.proc_ssl_server();
+            }
+            else
+            {
+                button_Listen.Text = "Listen";
+                this.server_.Abort();
+                while (this.server_.run_) { }
+                this.server_ = null;
+            }
         }
     }
 
@@ -34,6 +47,7 @@ namespace SimpleSSLServer
         private int portno_ = 0;
         private TcpListener listener_ = null;
         private bool abort_ = false;
+        public bool run_ = true;
 
         // 
         // コンストラクタ
@@ -42,6 +56,15 @@ namespace SimpleSSLServer
         {
             this.portno_ = portno;
             this.listener_ = TcpListener.Create(this.portno_);
+        }
+
+        // 
+        // 停止
+        // 
+        public void Abort()
+        {
+            this.abort_ = true;
+            this.listener_.Stop();
         }
 
         public void proc_ssl_server()
@@ -53,12 +76,26 @@ namespace SimpleSSLServer
 
                 while (true)
                 {
-                    TcpClient client = this.listener_.AcceptTcpClient(); // 被接続まで待機
+                    TcpClient client = null;
+                    try
+                    {
+                        client = this.listener_.AcceptTcpClient(); // 被接続まで待機
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Exception: {0}", ex.Message);
+                        Console.WriteLine("Closed.");
+                        this.run_ = false; // 終了
+                        return;
+                    }
+
                     if (abort_) { break; }
                     task_ssl_server(client);
                     Console.WriteLine("TCP Accepted");
                 }
                 Console.WriteLine("Closed.");
+
+                this.run_ = false; // 終了
             });
             task.Start();
         }
