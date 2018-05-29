@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.button_Listen = new System.Windows.Forms.Button();
+            this.textBoxLog = new System.Windows.Forms.TextBox();
+            this.textBoxPort = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button_Listen
@@ -41,21 +43,43 @@
             this.button_Listen.UseVisualStyleBackColor = true;
             this.button_Listen.Click += new System.EventHandler(this.button_Listen_Click);
             // 
+            // textBoxLog
+            // 
+            this.textBoxLog.Location = new System.Drawing.Point(14, 111);
+            this.textBoxLog.Multiline = true;
+            this.textBoxLog.Name = "textBoxLog";
+            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBoxLog.Size = new System.Drawing.Size(220, 115);
+            this.textBoxLog.TabIndex = 1;
+            // 
+            // textBoxPort
+            // 
+            this.textBoxPort.Location = new System.Drawing.Point(147, 39);
+            this.textBoxPort.Name = "textBoxPort";
+            this.textBoxPort.Size = new System.Drawing.Size(100, 19);
+            this.textBoxPort.TabIndex = 2;
+            this.textBoxPort.Text = "8883";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.textBoxPort);
+            this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.button_Listen);
             this.Name = "Form1";
             this.Text = "Form1";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private System.Windows.Forms.Button button_Listen;
+        private System.Windows.Forms.TextBox textBoxLog;
+        private System.Windows.Forms.TextBox textBoxPort;
     }
 }
 

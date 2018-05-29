@@ -21,6 +21,48 @@ namespace SimpleSSLServer
             InitializeComponent();
         }
 
+        private void button_Listen_Click(object sender, EventArgs e)
+        {
+            int portno = Int32.Parse(textBoxPort.Text);
+            TcpServer server = new TcpServer(portno);
+            server.proc_ssl_server();
+        }
+    }
+
+    public class TcpServer
+    {
+        private int portno_ = 0;
+        private TcpListener listener_ = null;
+        private bool abort_ = false;
+
+        // 
+        // コンストラクタ
+        // 
+        public TcpServer(int portno)
+        {
+            this.portno_ = portno;
+            this.listener_ = TcpListener.Create(this.portno_);
+        }
+
+        public void proc_ssl_server()
+        {
+            Task task = new Task(() =>
+            {
+                Console.WriteLine("Listening ...");
+                this.listener_.Start();
+
+                while (true)
+                {
+                    TcpClient client = this.listener_.AcceptTcpClient(); // 被接続まで待機
+                    if (abort_) { break; }
+                    task_ssl_server(client);
+                    Console.WriteLine("TCP Accepted");
+                }
+                Console.WriteLine("Closed.");
+            });
+            task.Start();
+        }
+
         private static Boolean UserCertificateValidationCallback(Object sender,
             System.Security.Cryptography.X509Certificates.X509Certificate certificate,
             System.Security.Cryptography.X509Certificates.X509Chain chain,
@@ -30,43 +72,94 @@ namespace SimpleSSLServer
             return true;
         }
 
-        private void button_Listen_Click(object sender, EventArgs e)
+        private void task_ssl_server(TcpClient client)
         {
-            TcpListener listener = TcpListener.Create(8883);
-            listener.Start();
-            TcpClient client = listener.AcceptTcpClient();
-            SslStream sslStream = new SslStream(client.GetStream(), false, UserCertificateValidationCallback, null);
-            try
+            Task task = new Task(() =>
             {
+                SslStream sslStream = new SslStream(client.GetStream(), false, UserCertificateValidationCallback, null);
+                try
                 {
-                    System.Security.Cryptography.X509Certificates.X509Certificate2 serverCert =
-                        new System.Security.Cryptography.X509Certificates.X509Certificate2("example_com.pfx", "password");
-                    sslStream.AuthenticateAsServer(serverCert, false, SslProtocols.Tls12, false);
-                    sslStream.ReadTimeout = 2000;
-
-                    byte[] rcvbytes = new byte[128];
-                    int n;
-                    while ((n = sslStream.Read(rcvbytes, 0, rcvbytes.Length)) > 0)
                     {
-                        String s = BitConverter.ToString(rcvbytes);
-                        Console.WriteLine("Receive: {0}", s);
+                        System.Security.Cryptography.X509Certificates.X509Certificate2 serverCert =
+                            new System.Security.Cryptography.X509Certificates.X509Certificate2("example_com.pfx", "password");
+                        sslStream.AuthenticateAsServer(serverCert, false, SslProtocols.Tls12, false);
+                        sslStream.ReadTimeout = 2000;
+
+                        // 読み込み
+                        while (proc_sslstream_read(sslStream)) { }
                     }
                 }
-            }
-            catch (AuthenticationException ex)
+                catch (AuthenticationException ex)
+                {
+                    Console.WriteLine("AuthenticationException: {0}", ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: {0}", ex.Message);
+                }
+                finally
+                {
+                    sslStream.Close();
+                    client.Close();
+                }
+            });
+            task.Start();
+        }
+
+        private UserApp userapp_ = new UserApp();
+        private bool proc_sslstream_read(SslStream sslStream)
+        {
+            try
             {
-                Console.WriteLine("AuthenticationException: {0}", ex.Message);
+                byte[] rcvBuf = new byte[128];
+                int n;
+                while ((n = sslStream.Read(rcvBuf, 0, rcvBuf.Length)) > 0)
+                {
+                    byte[] rcvbytes = new byte[n];
+                    Array.Copy(rcvBuf, 0, rcvbytes, 0, n);
+                    String s = BitConverter.ToString(rcvbytes);
+                    Console.WriteLine("Receive: {0}", s);
+
+                    // アプリケーション処理
+                    // 受信したパケットに応じて、応答パケット（送信パケット）を構築する
+                    byte[] sndbytes;
+                    userapp_.Proc(rcvbytes, out sndbytes);
+
+                    proc_sslstream_write(sslStream, sndbytes);
+                    String s2 = BitConverter.ToString(sndbytes);
+                    Console.WriteLine("Send: {0}", s2);
+                }
+            }
+            catch (System.IO.IOException ex)
+            {
+                // a timeout occurred
+                {
+                    byte[] rcvBuf = new byte[128];
+                    int originalTimeout = sslStream.ReadTimeout;
+                    sslStream.ReadTimeout = 1;
+                    sslStream.Read(rcvBuf, 0, rcvBuf.Length);
+                    sslStream.ReadTimeout = originalTimeout;
+                }
+                Console.WriteLine("Exception: {0}", ex.Message);
+                return true; // 継続
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception: {0}", ex.Message);
+                return false; // 中断
             }
-            finally
-            {
-                sslStream.Close();
-                client.Close();
-                listener.Stop();
-            } 
+
+            return false; // 中断
         }
+
+        private void proc_sslstream_write(SslStream sslStream, byte[] sndbytes)
+        {
+            if (sndbytes.Length <= 0)
+            {
+                return;
+            }
+            sslStream.Write(sndbytes, 0, sndbytes.Length);
+        }
+
     }
 }
