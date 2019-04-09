@@ -143,7 +143,8 @@ namespace SimpleSSLServer
             task.Start();
         }
 
-        private UserApp userapp_ = new UserApp();
+        private IUserApp userapp_mqtt_ = new UserAppMqttBroker();
+        private IUserApp userapp_http_ = new UserAppHttpServer();
         private bool proc_sslstream_read(SslStream sslStream)
         {
             try
@@ -160,7 +161,11 @@ namespace SimpleSSLServer
                     // アプリケーション処理
                     // 受信したパケットに応じて、応答パケット（送信パケット）を構築する
                     byte[] sndbytes;
-                    userapp_.Proc(rcvbytes, out sndbytes);
+                    userapp_mqtt_.Proc(rcvbytes, out sndbytes);
+                    if (sndbytes.Length <= 0)
+                    {
+                        userapp_http_.Proc(rcvbytes, out sndbytes);
+                    }
 
                     proc_sslstream_write(sslStream, sndbytes);
                     String s2 = BitConverter.ToString(sndbytes);
