@@ -29,7 +29,9 @@ namespace SimpleSSLServer
                 button_Listen.Text = "Listening ...";
 
                 int portno = Int32.Parse(textBoxPort.Text);
-                this.server_ = new TcpServer(portno);
+                string sslCertFileName = textBoxPfxFilePath.Text;
+                string sslCertPassword = textBoxPfxPassword.Text;
+                this.server_ = new TcpServer(portno, sslCertFileName, sslCertPassword);
                 this.server_.proc_ssl_server();
             }
             else
@@ -38,6 +40,20 @@ namespace SimpleSSLServer
                 this.server_.Abort();
                 while (this.server_.run_) { }
                 this.server_ = null;
+            }
+        }
+
+        // PFXファイルを開く
+        private void button_OpenPfx_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Open .pfx file";
+            ofd.InitialDirectory = textBoxPfxFilePath.Text;
+            ofd.RestoreDirectory = true;
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                textBoxPfxFilePath.Text = ofd.FileName;
             }
         }
     }
@@ -49,12 +65,16 @@ namespace SimpleSSLServer
         private bool abort_ = false;
         public bool run_ = true;
 
+        // for SSL
+        private System.Security.Cryptography.X509Certificates.X509Certificate serverCert_;
+        
         // 
         // コンストラクタ
         // 
-        public TcpServer(int portno)
+        public TcpServer(int portno, string sslCertFileName, string sslCertPassword)
         {
             this.portno_ = portno;
+            this.serverCert_ = new System.Security.Cryptography.X509Certificates.X509Certificate2(sslCertFileName, sslCertPassword);
             this.listener_ = TcpListener.Create(this.portno_);
         }
 
@@ -90,7 +110,7 @@ namespace SimpleSSLServer
                     }
 
                     if (abort_) { break; }
-                    task_ssl_server(client);
+                    task_ssl_server(client, this.serverCert_);
                     Console.WriteLine("TCP Accepted");
                 }
                 Console.WriteLine("Closed.");
@@ -109,7 +129,7 @@ namespace SimpleSSLServer
             return true;
         }
 
-        private void task_ssl_server(TcpClient client)
+        private void task_ssl_server(TcpClient client, System.Security.Cryptography.X509Certificates.X509Certificate serverCert)
         {
             Task task = new Task(() =>
             {
@@ -117,8 +137,6 @@ namespace SimpleSSLServer
                 try
                 {
                     {
-                        System.Security.Cryptography.X509Certificates.X509Certificate2 serverCert =
-                            new System.Security.Cryptography.X509Certificates.X509Certificate2("example_com.pfx", "password");
                         sslStream.AuthenticateAsServer(serverCert, false, SslProtocols.Tls12, false);
                         sslStream.ReadTimeout = 2000;
 

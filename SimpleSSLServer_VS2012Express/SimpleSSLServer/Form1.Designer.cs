@@ -31,6 +31,9 @@
             this.button_Listen = new System.Windows.Forms.Button();
             this.textBoxLog = new System.Windows.Forms.TextBox();
             this.textBoxPort = new System.Windows.Forms.TextBox();
+            this.textBoxPfxFilePath = new System.Windows.Forms.TextBox();
+            this.button_OpenPfx = new System.Windows.Forms.Button();
+            this.textBoxPfxPassword = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // button_Listen
@@ -45,11 +48,11 @@
             // 
             // textBoxLog
             // 
-            this.textBoxLog.Location = new System.Drawing.Point(14, 111);
+            this.textBoxLog.Location = new System.Drawing.Point(14, 150);
             this.textBoxLog.Multiline = true;
             this.textBoxLog.Name = "textBoxLog";
             this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBoxLog.Size = new System.Drawing.Size(220, 115);
+            this.textBoxLog.Size = new System.Drawing.Size(220, 91);
             this.textBoxLog.TabIndex = 1;
             // 
             // textBoxPort
@@ -60,11 +63,40 @@
             this.textBoxPort.TabIndex = 2;
             this.textBoxPort.Text = "8883";
             // 
+            // textBoxPfxFilePath
+            // 
+            this.textBoxPfxFilePath.Location = new System.Drawing.Point(14, 86);
+            this.textBoxPfxFilePath.Name = "textBoxPfxFilePath";
+            this.textBoxPfxFilePath.Size = new System.Drawing.Size(204, 19);
+            this.textBoxPfxFilePath.TabIndex = 3;
+            this.textBoxPfxFilePath.Text = "example_com.pfx";
+            // 
+            // button_OpenPfx
+            // 
+            this.button_OpenPfx.Location = new System.Drawing.Point(224, 82);
+            this.button_OpenPfx.Name = "button_OpenPfx";
+            this.button_OpenPfx.Size = new System.Drawing.Size(23, 23);
+            this.button_OpenPfx.TabIndex = 4;
+            this.button_OpenPfx.Text = "...";
+            this.button_OpenPfx.UseVisualStyleBackColor = true;
+            this.button_OpenPfx.Click += new System.EventHandler(this.button_OpenPfx_Click);
+            // 
+            // textBoxPfxPassword
+            // 
+            this.textBoxPfxPassword.Location = new System.Drawing.Point(14, 111);
+            this.textBoxPfxPassword.Name = "textBoxPfxPassword";
+            this.textBoxPfxPassword.Size = new System.Drawing.Size(233, 19);
+            this.textBoxPfxPassword.TabIndex = 5;
+            this.textBoxPfxPassword.Text = "password";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.textBoxPfxPassword);
+            this.Controls.Add(this.button_OpenPfx);
+            this.Controls.Add(this.textBoxPfxFilePath);
             this.Controls.Add(this.textBoxPort);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.button_Listen);
@@ -80,6 +112,9 @@
         private System.Windows.Forms.Button button_Listen;
         private System.Windows.Forms.TextBox textBoxLog;
         private System.Windows.Forms.TextBox textBoxPort;
+        private System.Windows.Forms.TextBox textBoxPfxFilePath;
+        private System.Windows.Forms.Button button_OpenPfx;
+        private System.Windows.Forms.TextBox textBoxPfxPassword;
     }
 }
 
