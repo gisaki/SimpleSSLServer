@@ -46,10 +46,10 @@ namespace SimpleSSLServer
             {
                 int content_len = 5;
                 String http_header = String.Format(
-                    "HTTP/1.1 200 OK\n" +
-                    "Server: xxx\n" +
-                    "Content-length: {0}\n" +
-                    "\n" + 
+                    "HTTP/1.1 200 OK\r\n" +
+                    "Server: xxx\r\n" +
+                    "Content-length: {0}\r\n" +
+                    "\r\n" + 
                     "abcde", 
                     content_len);
                 return Encoding.UTF8.GetBytes(http_header);
@@ -58,10 +58,10 @@ namespace SimpleSSLServer
             {
                 int content_len = 0;
                 String http_header = String.Format(
-                    "HTTP/1.1 200 OK\n" +
-                    "Server: yyy\n" +
-                    "Content-length: {0}\n" +
-                    "\n",
+                    "HTTP/1.1 200 OK\r\n" +
+                    "Server: yyy\r\n" +
+                    "Content-length: {0}\r\n" +
+                    "\r\n",
                     content_len);
                 return Encoding.UTF8.GetBytes(http_header);
             }

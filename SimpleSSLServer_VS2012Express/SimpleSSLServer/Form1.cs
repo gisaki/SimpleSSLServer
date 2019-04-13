@@ -137,6 +137,15 @@ namespace SimpleSSLServer
                 try
                 {
                     {
+                        // 
+                        // 制限事項：
+                        // SslStream を使用する限り、サーバが返却する証明書は1つのみに限られる。
+                        // そのためサーバ証明書＋中間CA証明書をクライアントに返却することはできない。
+                        // 背景：
+                        // AuthenticateAsServer() に指定できる証明書が X509Certificate 1つのみのため。
+                        // 仮に X509CertificateCollection が指定できれば可能だと思うけれども。
+                        // （おそらく）OpenSSLを使用すれば可能なはず。
+                        // 
                         sslStream.AuthenticateAsServer(serverCert, false, SslProtocols.Tls12, false);
                         sslStream.ReadTimeout = 2000;
 
@@ -161,6 +170,7 @@ namespace SimpleSSLServer
             task.Start();
         }
 
+        private IUserApp userapp_process_ = new UserAppOtherProcess();
         private IUserApp userapp_mqtt_ = new UserAppMqttBroker();
         private IUserApp userapp_http_ = new UserAppHttpServer();
         private bool proc_sslstream_read(SslStream sslStream)
@@ -178,8 +188,15 @@ namespace SimpleSSLServer
 
                     // アプリケーション処理
                     // 受信したパケットに応じて、応答パケット（送信パケット）を構築する
-                    byte[] sndbytes;
-                    userapp_mqtt_.Proc(rcvbytes, out sndbytes);
+                    byte[] sndbytes = { };
+                    if (sndbytes.Length <= 0)
+                    {
+                        userapp_process_.Proc(rcvbytes, out sndbytes);
+                    }
+                    if (sndbytes.Length <= 0)
+                    {
+                        userapp_mqtt_.Proc(rcvbytes, out sndbytes);
+                    }
                     if (sndbytes.Length <= 0)
                     {
                         userapp_http_.Proc(rcvbytes, out sndbytes);

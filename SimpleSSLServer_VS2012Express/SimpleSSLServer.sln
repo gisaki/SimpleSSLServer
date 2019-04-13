@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSSLServer", "SimpleSSLServer\SimpleSSLServer.csproj", "{627A2C90-CFD4-45B4-88DB-A49D5D919D3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserAppHttpServer", "UserAppHttpServer\UserAppHttpServer.csproj", "{41BB4EE6-2115-40D2-A7C8-E8518FDD84AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{627A2C90-CFD4-45B4-88DB-A49D5D919D3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{627A2C90-CFD4-45B4-88DB-A49D5D919D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{627A2C90-CFD4-45B4-88DB-A49D5D919D3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41BB4EE6-2115-40D2-A7C8-E8518FDD84AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41BB4EE6-2115-40D2-A7C8-E8518FDD84AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41BB4EE6-2115-40D2-A7C8-E8518FDD84AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41BB4EE6-2115-40D2-A7C8-E8518FDD84AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
