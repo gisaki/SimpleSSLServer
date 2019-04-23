@@ -23,9 +23,22 @@ namespace UserAppHttpServer
             // textBox1.Text = BitConverter.ToString(inbyte_);
             textBox_stdin.Text = System.Text.Encoding.ASCII.GetString(inbyte_);
             // textBox1.Text = String.Format("{0}", inbyte_.Length);
+
+            // 表示項目の初期化
+            ViewInit();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        // 表示項目の初期化
+        private void ViewInit()
+        {
+            comboBox_Send_StatusCode.Items.Add("200 OK");
+            comboBox_Send_StatusCode.Items.Add("400 aaa");
+            comboBox_Send_StatusCode.Items.Add("404 bbb");
+            comboBox_Send_StatusCode.Items.Add("500 ccc");
+        }
+
+        // 送信ボタン
+        private void button_Send_Click(object sender, EventArgs e)
         {
             String http_header_and_body = textBox_stdout.Text;
             byte[] buf = Encoding.UTF8.GetBytes(http_header_and_body);
