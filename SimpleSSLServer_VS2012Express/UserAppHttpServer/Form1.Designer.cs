@@ -218,7 +218,7 @@
             this.textBox_Send_Manual_StatusLine.Name = "textBox_Send_Manual_StatusLine";
             this.textBox_Send_Manual_StatusLine.Size = new System.Drawing.Size(155, 19);
             this.textBox_Send_Manual_StatusLine.TabIndex = 6;
-            this.textBox_Send_Manual_StatusLine.Text = "200 OK";
+            this.textBox_Send_Manual_StatusLine.Text = "200 OKOK";
             // 
             // textBox_Send_Manual_ContentLen
             // 
